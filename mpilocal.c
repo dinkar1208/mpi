@@ -4,7 +4,7 @@
 #include <time.h>
 #include <assert.h>
 
-#define NUM_MAX 1000
+#define NUM_MAX 100000
 
 int main(int argc, char** argv) {
   /*** Initialize the MPI environment ***/
@@ -22,7 +22,6 @@ int main(int argc, char** argv) {
   int reorder = 1;
   MPI_Dims_create(world_size, 1, &dims);
   MPI_Cart_create(MPI_COMM_WORLD, 1, &dims, &qperiodic, reorder, &newcomm);
-  //newcomm  = MPI_COMM_WORLD;
   /*** Getting new world rank ***/
   MPI_Comm_rank(newcomm, &world_rank);
 
@@ -30,15 +29,15 @@ int main(int argc, char** argv) {
   int n,i;
   float sum = 0.0;
   float total = 0.0;
-  int *numbers;
-  int *buf;
+  float numbers[NUM_MAX];
+  float buf[NUM_MAX];
 
   //printf("World size is %d and world rank is %d\n\n", world_size, world_rank);
 
   /*** Broadcast and receive ***/
   if(world_rank == 0) {
     // If we are rank 0, set the number to -1 and send it to process 1
-    numbers = (int *)malloc(sizeof(int) * NUM_MAX);
+    //numbers = (int *)malloc(sizeof(int) * NUM_MAX);
     for(i=0; i<NUM_MAX; i++)
     {
 	numbers[i] = (rand() / (float)RAND_MAX)*10;
@@ -47,7 +46,7 @@ int main(int argc, char** argv) {
 	MPI_Bcast(numbers, NUM_MAX, MPI_INT, 0, newcomm);
   }
   else {
-	buf = (int *)malloc(sizeof(int) * NUM_MAX);
+	//buf = (int *)malloc(sizeof(int) * NUM_MAX);
 	MPI_Bcast(buf, NUM_MAX, MPI_INT ,0 , newcomm);
   }
  // printf("Broadcast successful\n\r");
@@ -61,7 +60,7 @@ int main(int argc, char** argv) {
 	{
 		sum = sum + buf[i];
 	}
-	//printf("Sum from %d is %f\n", world_rank, sum);
+	printf("Sum from %d is %f\n", world_rank, sum);
   }
  	MPI_Reduce(&sum, &total, 1, MPI_FLOAT, MPI_SUM, 0, newcomm);
 
@@ -69,10 +68,11 @@ int main(int argc, char** argv) {
   if(world_rank == 0)
   {
   	printf("The total sum is %f\n", total);
-  }
 
-  free(numbers);
-  free(buf);
- 
- MPI_Finalize();
+  }
+  
+//  free(numbers);
+//  free(buf);
+  MPI_Finalize();
 }
+
