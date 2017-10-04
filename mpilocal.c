@@ -29,15 +29,17 @@ int main(int argc, char** argv) {
   int n,i;
   float sum = 0.0;
   float total = 0.0;
-  float numbers[NUM_MAX];
-  float buf[NUM_MAX];
+  float *numbers;
+  float *buf;
 
-  //printf("World size is %d and world rank is %d\n\n", world_size, world_rank);
-
+  printf("World size is %d and world rank is %d\n\n", world_size, world_rank);
+  srand(time(0));
   /*** Broadcast and receive ***/
+  numbers = (float *)malloc(sizeof(float) * NUM_MAX);
+  buf = (float *)malloc(sizeof(float) * NUM_MAX);
   if(world_rank == 0) {
     // If we are rank 0, set the number to -1 and send it to process 1
-    //numbers = (int *)malloc(sizeof(int) * NUM_MAX);
+
     for(i=0; i<NUM_MAX; i++)
     {
 	numbers[i] = (rand() / (float)RAND_MAX)*10;
@@ -46,7 +48,7 @@ int main(int argc, char** argv) {
 	MPI_Bcast(numbers, NUM_MAX, MPI_INT, 0, newcomm);
   }
   else {
-	//buf = (int *)malloc(sizeof(int) * NUM_MAX);
+
 	MPI_Bcast(buf, NUM_MAX, MPI_INT ,0 , newcomm);
   }
  // printf("Broadcast successful\n\r");
@@ -68,11 +70,10 @@ int main(int argc, char** argv) {
   if(world_rank == 0)
   {
   	printf("The total sum is %f\n", total);
-
   }
   
-//  free(numbers);
-//  free(buf);
+  free(numbers);
+  free(buf);
   MPI_Finalize();
 }
 
