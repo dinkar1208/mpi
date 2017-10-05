@@ -4,13 +4,15 @@
 #include <time.h>
 #include <assert.h>
 
-#define NUM_MAX 100000
+#define NUM_MAX 1000000
 
 int main(int argc, char** argv) {
   /*** Initialize the MPI environment ***/
   MPI_Status status;
   MPI_Init(NULL, NULL);
   MPI_Comm newcomm;
+  /*** Start the timer ***/
+	double start = MPI_Wtime();
   /*** Getting world size and rank ***/
   int world_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -69,7 +71,11 @@ int main(int argc, char** argv) {
   /*** Collecting all sums at root node and finding the total sum ***/
   if(world_rank == 0)
   {
-  	printf("The total sum is %f\n", total);
+  	printf("\nThe total sum is %f\n", total);
+ 	 /***Stop the timer***/
+	double stop = MPI_Wtime();
+	printf("\nTime taken for the process is %lf secs.\n",(stop-start));
+
   }
   
   free(numbers);
