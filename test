@@ -1,4 +1,4 @@
 #!/bin/bash
 clear
 mpicc -o mpiout mpilocal.c
-mpiexec -n 5 ./mpiout
+mpiexec -n 8 ./mpiout
